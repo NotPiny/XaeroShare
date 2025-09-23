@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "xaeroshare",
+  "version": "${version}",
+  "name": "XaeroShare",
+  "description": "Adds the ability to share xaero's minimap waypoints with individual players",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/xaeroshare/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": [
+      "dev.piny.xaeroshare.client.XaeroshareDataGenerator"
+    ],
+    "client": [
+      "dev.piny.xaeroshare.client.XaeroshareClient"
+    ],
+    "main": [
+      "dev.piny.xaeroshare.Xaeroshare"
+    ]
+  },
+  "mixins": [
+    "xaeroshare.mixins.json",
+    {
+      "config": "xaeroshare.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
