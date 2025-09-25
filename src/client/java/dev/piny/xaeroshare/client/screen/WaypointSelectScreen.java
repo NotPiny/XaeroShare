@@ -7,9 +7,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.Text;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class WaypointSelectScreen extends Screen {
     public WaypointSelectScreen(Text title) {
@@ -26,10 +29,13 @@ public class WaypointSelectScreen extends Screen {
             return;
         }
 
-        String serverIP = client.getCurrentServerEntry().address;
         assert client.world != null;
         String dimName = client.world.getRegistryKey().getValue().toString();
-        Waypoint[] waypoints = WaypointTools.findWaypoints(serverIP, dimName); // At least one, otherwise toast above would have shown by now
+        List<Waypoint> waypoints = new ArrayList<>();
+        Objects.requireNonNull(WaypointTools.getMinimapWorld(client.world.getRegistryKey())).getIterableWaypointSets().forEach(waypointSet -> waypointSet.getWaypoints().forEach(waypoint -> {
+            Waypoint wp = WaypointTools.convertWaypoint(waypoint, WaypointTools.dimId.getOrDefault(dimName, 0));
+            waypoints.add(wp);
+        }));
         int x = 20;
         int y = 20;
         int width = 200;
@@ -56,20 +62,6 @@ public class WaypointSelectScreen extends Screen {
                 x += width + padding;
             }
         }
-
-//        TextFieldWidget textFieldWidget = new TextFieldWidget(this.textRenderer, 40, 70, 120, 20, Text.of("Input"));
-//        ButtonWidget buttonWidget = ButtonWidget.builder(Text.of("Speak thy truth"), (btn) -> {
-//            // When the button is clicked, we can display a toast to the screen.
-//            assert this.client != null;
-//            this.client.getToastManager().add(
-//                    SystemToast.create(this.client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Turns out"), Text.of("Trans rights are human rights"))
-//            );
-//            XaeroshareClient.LOGGER.info(textFieldWidget.getText());
-//        }).dimensions(40, 40, 120, 20).build();
-//
-//        // Register the button widget.
-//        this.addDrawableChild(buttonWidget);
-//        this.addDrawableChild(textFieldWidget);
     }
 
     @Override

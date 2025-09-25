@@ -1,11 +1,14 @@
 package dev.piny.xaeroshare.client;
 
 import net.fabricmc.loader.api.FabricLoader;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.world.World;
 import org.slf4j.Logger;
+import xaero.hud.minimap.BuiltInHudModules;
+import xaero.hud.minimap.module.MinimapSession;
+import xaero.hud.minimap.world.MinimapWorld;
+import xaero.hud.path.XaeroPath;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -24,78 +27,46 @@ public class WaypointTools {
             1, "minecraft:the_end"
     );
 
-    public static Waypoint[] findWaypoints(@NotNull String serverIP, @NotNull String dimName) {
-        Path serverFolder = xaeroDir.resolve("Multiplayer_" + serverIP);
-
-        if (!dimId.containsKey(dimName.toLowerCase())) {
-            LOGGER.error("Dimension not recognized: {}", dimName.toLowerCase());
-            return new Waypoint[0];
+    public static MinimapWorld getMinimapWorld(RegistryKey<World> dim) { // This is just taken from https://github.com/rfresh2/XaeroPlus/blob/1.20.1/common/src/main/java/xaeroplus/feature/waypoint/WaypointAPI.java#L19 :)
+        MinimapSession minimapSession = BuiltInHudModules.MINIMAP.getCurrentSession();
+        if (minimapSession == null) return null;
+        MinimapWorld currentWorld = minimapSession.getWorldManager().getCurrentWorld();
+        if (currentWorld == null) return null;
+        if (currentWorld.getDimId() == dim) {
+            return currentWorld;
         }
-
-        Path dimFolder = serverFolder.resolve("dim%" + dimId.get(dimName));
-        Path waypointsPath;
-        File[] files = dimFolder.toFile().listFiles((dir, name) -> name.endsWith(".txt"));
-        if (files != null && files.length > 0) {
-            waypointsPath = files[0].toPath();
-        } else {
-            LOGGER.error("No .txt waypoint files found in: {}", dimFolder);
-            return new Waypoint[0];
-        }
-        File waypointsFile = waypointsPath.toFile();
-
-        if (waypointsFile.exists()) {
-            try {
-                String content = Files.readString(waypointsPath);
-                String[] lines = content.split("\n");
-
-                // First pass: count valid waypoint lines
-                int waypointCount = 0;
-                for (String line : lines) {
-                    String trimmedLine = line.trim();
-                    if (trimmedLine.startsWith("waypoint:")) {
-                        waypointCount++;
-                    }
-                }
-
-                // Second pass: parse waypoints
-                Waypoint[] waypoints = new Waypoint[waypointCount];
-                int waypointIndex = 0;
-
-                for (String line : lines) {
-                    String trimmedLine = line.trim();
-                    if (trimmedLine.startsWith("waypoint:")) {
-                        String[] parts = trimmedLine.split(":");
-                        if (parts.length == 14) {
-                            String name = parts[1];
-                            String initials = parts[2];
-                            int x = Integer.parseInt(parts[3]);
-                            int y = Integer.parseInt(parts[4]);
-                            int z = Integer.parseInt(parts[5]);
-                            int color = Integer.parseInt(parts[6]);
-                            boolean disabled = Boolean.parseBoolean(parts[7]);
-                            int type = Integer.parseInt(parts[8]);
-                            String set = parts[9];
-                            boolean rotateOnTp = Boolean.parseBoolean(parts[10]);
-                            int tpYaw = Integer.parseInt(parts[11]);
-                            int visibilityType = Integer.parseInt(parts[12]);
-                            String destination = parts[13];
-                            waypoints[waypointIndex] = new Waypoint(name, initials, x, y, z, color, disabled, type, set, rotateOnTp, tpYaw, visibilityType, destination, dimId.get(dimName));
-                            waypointIndex++;
-                        } else {
-                            LOGGER.warn("Invalid waypoint format: {}", trimmedLine);
-                        }
-                    }
-                }
-
-                return waypoints;
-            } catch (Exception e) {
-                LOGGER.error("Error reading waypoints file: {}", e.getMessage());
-                return new Waypoint[0];
+        var rootContainer = minimapSession.getWorldManager().getCurrentRootContainer();
+        for (MinimapWorld world : rootContainer.getWorlds()) {
+            if (world.getDimId() == dim) {
+                return world;
             }
-        } else {
-            LOGGER.warn("Waypoints file does not exist: {}", waypointsPath);
         }
-
-        return new Waypoint[0];
+        String dimensionDirectoryName = minimapSession.getDimensionHelper().getDimensionDirectoryName(dim);
+        String worldNode = minimapSession.getWorldStateUpdater().getPotentialWorldNode(dim, true);
+        XaeroPath containerPath = minimapSession.getWorldState()
+                .getAutoRootContainerPath()
+                .resolve(dimensionDirectoryName)
+                .resolve(worldNode);
+        return minimapSession.getWorldManager().getWorld(containerPath);
     }
+
+    public static Waypoint convertWaypoint(xaero.common.minimap.waypoints.Waypoint wp, int dim) {
+        return new Waypoint(
+                wp.getName(),
+                wp.getInitials(),
+                wp.getX(),
+                wp.getY(),
+                wp.getZ(),
+                wp.getColor(),
+                wp.isDisabled(),
+                wp.getWaypointType(),
+                "gui.xaero_default", // I think this always this value and as far as I can tell there's no way to actually fetch its value
+                wp.isRotation(),
+                wp.getYaw(),
+                wp.getVisibilityType(),
+                "0", // This is yet again one of those values that I can't find any way to fetch
+                dim
+        );
+    }
+
 }

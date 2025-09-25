@@ -11,6 +11,9 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class XaeroshareClient implements ClientModInitializer {
     private static KeyBinding keyBinding;
     public static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("xaeroshare");
@@ -36,13 +39,19 @@ public class XaeroshareClient implements ClientModInitializer {
                 }
 
                 assert client.world != null;
-                if (WaypointTools.findWaypoints(
-                        client.getCurrentServerEntry().address,
-                        client.world.getRegistryKey().getValue().toString()
-                ).length == 0) {
+
+                AtomicInteger waypointsFound = new AtomicInteger();
+                Objects.requireNonNull(WaypointTools.getMinimapWorld(client.world.getRegistryKey())).getIterableWaypointSets().forEach(waypointSet -> {
+                    waypointSet.getWaypoints().forEach(waypoint -> {
+                        waypointsFound.getAndIncrement();
+                    });
+                });
+
+                if (waypointsFound.get() == 0) {
                     client.getToastManager().add(
                             SystemToast.create(client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("No waypoints found"), Text.of("You have no waypoints to share"))
                     );
+                    return;
                 }
 
                 MinecraftClient.getInstance().setScreen(
