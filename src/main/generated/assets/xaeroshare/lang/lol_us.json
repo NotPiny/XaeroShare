@@ -1,0 +1,13 @@
+{
+  "key.category.minecraft.xaeroshare": "Map pointz sharerz",
+  "key.xaeroshare.share": "Ai can sharez map pointz",
+  "xaeroshare.text.enter_player_name": "Plz enter ur frendz namez:",
+  "xaeroshare.text.multiplayer_note": "(Use commaz to add more frendz)",
+  "xaeroshare.text.player_name": "Frendz namez",
+  "xaeroshare.text.share_waypoint": "Sharez map pointz",
+  "xaeroshare.text.shared_to_player": "Ai iz sending map pointz %s to %s...",
+  "xaeroshare.text.toast.no_server.description": "Joinz a sever to sharez map pointz",
+  "xaeroshare.text.toast.no_server.title": "No serverz foundz",
+  "xaeroshare.text.toast.no_waypoints.description": "U srsly haz no map pointz to sharez???",
+  "xaeroshare.text.toast.no_waypoints.title": "No map pointz foundz!1!!11!!"
+}

@@ -1,0 +1,13 @@
+{
+  "key.category.minecraft.xaeroshare": "Map o' Share",
+  "key.xaeroshare.share": "Share marked spot",
+  "xaeroshare.text.enter_player_name": "Enter Matey's Name:",
+  "xaeroshare.text.multiplayer_note": "(Use commas to add more mates)",
+  "xaeroshare.text.player_name": "Matey's Name",
+  "xaeroshare.text.share_waypoint": "Share Marked Spot",
+  "xaeroshare.text.shared_to_player": "Sendin' marked spot %s to %s...",
+  "xaeroshare.text.toast.no_server.description": "Locate yerself a server to share waypoints",
+  "xaeroshare.text.toast.no_server.title": "There be no server",
+  "xaeroshare.text.toast.no_waypoints.description": "Ye have no marked spots to share",
+  "xaeroshare.text.toast.no_waypoints.title": "There be no marked spots"
+}

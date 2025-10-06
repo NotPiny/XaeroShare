@@ -25,19 +25,17 @@ public class PlayerSelectScreen extends Screen {
     protected void init() {
         super.init();
 
-        TextWidget instructionText = new TextWidget(this.width / 2 - 100, this.height / 2 - 60, 200, 20, Text.of("Enter Player Name:"), this.textRenderer);
-        TextWidget multiPlayerNoteText = new TextWidget(this.width / 2 - 100, this.height / 2 - 40, 200, 20, Text.of("(Use commas to add more players)"), this.textRenderer);
-        TextFieldWidget textField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, this.height / 2 - 10, 200, 20, Text.of("Player Name"));
+        TextWidget instructionText = new TextWidget(this.width / 2 - 100, this.height / 2 - 60, 200, 20, Text.translatable("xaeroshare.text.enter_player_name"), this.textRenderer);
+        TextWidget multiPlayerNoteText = new TextWidget(this.width / 2 - 100, this.height / 2 - 40, 200, 20, Text.translatable("xaeroshare.text.multiplayer_note"), this.textRenderer);
+        TextFieldWidget textField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, this.height / 2 - 10, 200, 20, Text.translatable("xaeroshare.text.player_name"));
         textField.setText("");
-        ButtonWidget sendButton = ButtonWidget.builder(Text.of("Send Waypoint"), button -> {
+        ButtonWidget sendButton = ButtonWidget.builder(Text.translatable("xaeroshare.text.share_waypoint"), button -> {
             // Logic to send the waypoint to the specified player
             String playerNameInput = textField.getText();
             if (!playerNameInput.isEmpty()) {
-                // Implement the logic to send the waypoint to the player
-                // For example, you might want to send a chat message or use a custom packet
                 assert this.client != null;
                 assert this.client.player != null;
-                this.client.player.sendMessage(Text.of("Sending waypoint " + sharedWaypoint.name() + " to " + playerNameInput.replace(",", ", ") + "..."), false);
+                this.client.player.sendMessage(Text.translatable("xaeroshare.text.shared_to_player", sharedWaypoint.name(), playerNameInput.replace(",", ", ")), false);
                 if (!playerNameInput.contains(",")) {
                     this.client.player.networkHandler.sendChatCommand("msg " + playerNameInput + " " + sharedWaypoint.toImportableString());
                 } else {
