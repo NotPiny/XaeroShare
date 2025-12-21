@@ -1,0 +1,8 @@
+name: XaeroSharePlugin
+version: '1.0'
+main: dev.piny.xaeroSharePlugin.XaeroSharePlugin
+api-version: '1.21'
+prefix: XaeroShare
+authors: [ Ember <piny.dev> ]
+description: Allows players to chose specific players to share waypoints with.
+website: https://modrinth.com/plugin/xaeroshare
