@@ -1,7 +1,12 @@
+        //? if mc >= 1.21.9 {
+//? if mc >= 1.21.9 {
 package dev.piny.xaeroshare.client;
 
+import dev.piny.xaeroshare.client.command.LocationShareCommand;
+import dev.piny.xaeroshare.client.command.WaypointShareCommand;
 import dev.piny.xaeroshare.client.screen.WaypointSelectScreen;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
@@ -27,6 +32,11 @@ public class XaeroshareClient implements ClientModInitializer {
                 GLFW.GLFW_KEY_RIGHT_ALT, // The keycode of the key
                 new KeyBinding.Category(Identifier.of("xaeroshare")) // The translation key of the keybinding's category.
         ));
+
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            LocationShareCommand.register(dispatcher);
+            WaypointShareCommand.register(dispatcher);
+        });
 
         new XaeroshareCommand();
 
