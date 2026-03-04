@@ -18,7 +18,7 @@ public class LocationShareCommand {
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(
                 ClientCommandManager.literal("locationshare")
-                        .then(ClientCommandManager.argument("waypointName", StringArgumentType.word())
+                        .then(ClientCommandManager.argument("waypointName", StringArgumentType.string())
                                 .then(ClientCommandManager.argument("dimension", StringArgumentType.string())
                                         .suggests((context, builder) -> {
                                             MinecraftClient.getInstance().getNetworkHandler()
