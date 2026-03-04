@@ -1,5 +1,3 @@
-        //? if mc >= 1.21.9 {
-//? if mc >= 1.21.9 {
 package dev.piny.xaeroshare.client;
 
 import dev.piny.xaeroshare.client.command.LocationShareCommand;
@@ -30,7 +28,7 @@ public class XaeroshareClient implements ClientModInitializer {
                 "key.xaeroshare.share", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
                 GLFW.GLFW_KEY_RIGHT_ALT, // The keycode of the key
-                new KeyBinding.Category(Identifier.of("xaeroshare")) // The translation key of the keybinding's category.
+                "key.category.minecraft.xaeroshare" // The translation key of the keybinding's category.
         ));
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {

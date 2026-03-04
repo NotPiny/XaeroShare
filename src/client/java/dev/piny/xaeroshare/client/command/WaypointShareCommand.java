@@ -20,12 +20,19 @@ public class WaypointShareCommand {
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(
                 ClientCommandManager.literal("waypointshare")
-                        .then(ClientCommandManager.argument("waypointName", StringArgumentType.word())
+                        .then(ClientCommandManager.argument("waypointName", StringArgumentType.string())
                                 .suggests((context, builder) -> {
                                     RegistryKey<World> dimension = MinecraftClient.getInstance().world.getRegistryKey();
                                     MinimapWorld world = WaypointTools.getMinimapWorld(dimension);
                                     if (world == null) return builder.buildFuture();
-                                    world.getIterableWaypointSets().forEach(waypointSet -> waypointSet.getWaypoints().forEach(waypoint -> builder.suggest(waypoint.getName())));
+                                    world.getIterableWaypointSets().forEach(waypointSet -> waypointSet.getWaypoints().forEach(waypoint -> {
+                                        if (waypoint.getName().contains(" ")) {
+                                            builder.suggest("\"" + waypoint.getName() + "\"");
+                                            return;
+                                        }
+
+                                        builder.suggest(waypoint.getName());
+                                    }));
                                     return builder.buildFuture();
                                 })
                                 .then(ClientCommandManager.argument("dimension", StringArgumentType.string())
@@ -45,11 +52,7 @@ public class WaypointShareCommand {
                                                     MinecraftClient.getInstance().getNetworkHandler()
                                                             .getPlayerList()
                                                             .forEach(p -> {
-                                                                //? if mc >= 1.21.9 {
-                                                                String name = p.getProfile().name();
-                                                                //?} else {
-                                                                /*String name = p.getProfile().getName();*/
-                                                                //?}
+                                                                String name = p.getProfile().getName();
                                                                 if (name.startsWith(prefix)) {
                                                                     String alreadyTyped = remaining.contains(" ")
                                                                             ? remaining.substring(0, remaining.lastIndexOf(' ') + 1)

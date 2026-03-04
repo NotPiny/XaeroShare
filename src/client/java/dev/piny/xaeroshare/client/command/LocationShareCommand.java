@@ -39,11 +39,7 @@ public class LocationShareCommand {
                                                                             MinecraftClient.getInstance().getNetworkHandler()
                                                                                     .getPlayerList()
                                                                                     .forEach(p -> {
-                                                                                        //? if mc >= 1.21.9 {
-                                                                                        String name = p.getProfile().name();
-                                                                                        //?} else {
-                                                                                        /*String name = p.getProfile().getName();*/
-                                                                                        //?}
+                                                                                        String name = p.getProfile().getName();
                                                                                         if (name.startsWith(prefix)) {
                                                                                             String alreadyTyped = remaining.contains(" ")
                                                                                                     ? remaining.substring(0, remaining.lastIndexOf(' ') + 1)
