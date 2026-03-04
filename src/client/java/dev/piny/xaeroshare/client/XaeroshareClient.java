@@ -1,5 +1,3 @@
-        //? if mc >= 1.21.9 {
-//? if mc >= 1.21.9 {
 package dev.piny.xaeroshare.client;
 
 import dev.piny.xaeroshare.client.command.LocationShareCommand;
@@ -37,8 +35,6 @@ public class XaeroshareClient implements ClientModInitializer {
             LocationShareCommand.register(dispatcher);
             WaypointShareCommand.register(dispatcher);
         });
-
-        new XaeroshareCommand();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (keyBinding.wasPressed()) {

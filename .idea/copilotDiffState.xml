@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/fix-intellij-launch.sh">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/fix-intellij-launch.sh" />
+              <option name="updatedContent" value="#!/bin/bash&#10;# Fix IntelliJ Launch Configuration Script&#10;&#10;set -e&#10;&#10;echo &quot;=== Fixing IntelliJ IDEA Launch Configuration ===&quot;&#10;&#10;# Stop Gradle daemon&#10;echo &quot;1. Stopping Gradle daemon...&quot;&#10;./gradlew --stop || true&#10;&#10;# Remove launch cache&#10;echo &quot;2. Removing launch cache...&quot;&#10;rm -f .gradle/loom-cache/launch.cfg&#10;&#10;# Regenerate launch configuration&#10;echo &quot;3. Regenerating launch configuration...&quot;&#10;./gradlew generateDLIConfig configureClientLaunch&#10;&#10;echo &quot;&quot;&#10;echo &quot;=== Configuration regenerated successfully! ===&quot;&#10;echo &quot;&quot;&#10;echo &quot;Next steps:&quot;&#10;echo &quot;1. In IntelliJ IDEA, go to: File &gt; Invalidate Caches...&quot;&#10;echo &quot;2. Check 'Clear file system cache and Local History'&quot;&#10;echo &quot;3. Click 'Invalidate and Restart'&quot;&#10;echo &quot;&quot;&#10;echo &quot;OR&quot;&#10;echo &quot;&quot;&#10;echo &quot;1. Close IntelliJ IDEA completely&quot;&#10;echo &quot;2. Delete: .idea/workspace.xml&quot;&#10;echo &quot;3. Reopen IntelliJ IDEA&quot;&#10;echo &quot;&quot;&#10;echo &quot;The launch.cfg file is at:&quot;&#10;echo &quot;  $(pwd)/.gradle/loom-cache/launch.cfg&quot;&#10;echo &quot;&quot;&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/verify-config.sh">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/verify-config.sh" />
+              <option name="updatedContent" value="#!/bin/bash&#10;# Verify IntelliJ Launch Configuration&#10;&#10;echo &quot;=== Verifying IntelliJ IDEA Launch Configuration ===&quot;&#10;echo &quot;&quot;&#10;&#10;PROJECT_DIR=&quot;/home/ember/Documents/Code/Java/XaeroShare&quot;&#10;LAUNCH_CFG=&quot;$PROJECT_DIR/.gradle/loom-cache/launch.cfg&quot;&#10;CLIENT_XML=&quot;$PROJECT_DIR/.idea/runConfigurations/Minecraft_Client.xml&quot;&#10;&#10;# Check launch.cfg exists&#10;if [ -f &quot;$LAUNCH_CFG&quot; ]; then&#10;    echo &quot;✅ launch.cfg exists at: $LAUNCH_CFG&quot;&#10;    echo &quot;   Size: $(du -h &quot;$LAUNCH_CFG&quot; | cut -f1)&quot;&#10;else&#10;    echo &quot;❌ launch.cfg NOT FOUND at: $LAUNCH_CFG&quot;&#10;    echo &quot;   Run: ./gradlew generateDLIConfig&quot;&#10;    exit 1&#10;fi&#10;&#10;echo &quot;&quot;&#10;&#10;# Check run configuration exists&#10;if [ -f &quot;$CLIENT_XML&quot; ]; then&#10;    echo &quot;✅ Minecraft_Client.xml exists&quot;&#10;else&#10;    echo &quot;❌ Minecraft_Client.xml NOT FOUND&quot;&#10;    exit 1&#10;fi&#10;&#10;echo &quot;&quot;&#10;&#10;# Check for bad paths in XML&#10;if grep -q &quot;/home/piny&quot; &quot;$CLIENT_XML&quot;; then&#10;    echo &quot;❌ Found hardcoded /home/piny paths in Minecraft_Client.xml&quot;&#10;    echo &quot;   These need to be fixed!&quot;&#10;    grep &quot;/home/piny&quot; &quot;$CLIENT_XML&quot;&#10;    exit 1&#10;else&#10;    echo &quot;✅ No hardcoded /home/piny paths found&quot;&#10;fi&#10;&#10;echo &quot;&quot;&#10;&#10;# Check for PROJECT_DIR usage&#10;if grep -q '\$PROJECT_DIR\$' &quot;$CLIENT_XML&quot;; then&#10;    echo &quot;✅ Using \$PROJECT_DIR\$ variable correctly&quot;&#10;else&#10;    echo &quot;⚠️  Warning: \$PROJECT_DIR\$ variable not found&quot;&#10;fi&#10;&#10;echo &quot;&quot;&#10;&#10;# Check for module specification&#10;if grep -q '&lt;module name=&quot;XaeroShare.client&quot;/&gt;' &quot;$CLIENT_XML&quot;; then&#10;    echo &quot;✅ Module XaeroShare.client is specified&quot;&#10;else&#10;    echo &quot;⚠️  Warning: Module specification missing or incorrect&quot;&#10;fi&#10;&#10;echo &quot;&quot;&#10;&#10;# Show the VM parameters line&#10;echo &quot;Current VM Parameters in XML:&quot;&#10;grep -o 'VM_PARAMETERS.*' &quot;$CLIENT_XML&quot; | sed 's/&quot;/\n  /g' | head -5&#10;&#10;echo &quot;&quot;&#10;echo &quot;=== Configuration appears correct! ===&quot;&#10;echo &quot;&quot;&#10;echo &quot;If IntelliJ still shows errors, you need to:&quot;&#10;echo &quot;  1. File &gt; Invalidate Caches... &gt; Invalidate and Restart&quot;&#10;echo &quot;  2. OR delete .idea/workspace.xml and reopen IntelliJ&quot;&#10;echo &quot;&quot;&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
