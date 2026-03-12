@@ -1,0 +1,59 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - plugin
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version from plugin.yml
+        id: get_version
+        run: |
+          VERSION=$(grep "^version:" src/main/resources/plugin.yml | sed "s/version: '//;s/'//;s/version: //")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if version tag already exists
+        id: check_tag
+        run: |
+          if git ls-remote --tags origin | grep -q "refs/tags/plugin-v${{ steps.get_version.outputs.version }}$"; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up JDK 21
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        if: steps.check_tag.outputs.exists == 'false'
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        if: steps.check_tag.outputs.exists == 'false'
+        run: ./gradlew build
+
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: plugin-v${{ steps.get_version.outputs.version }}
+          name: [Plugin] XaeroShare v${{ steps.get_version.outputs.version }}
+          body: |
+            Automated release from commit ${{ github.sha }}.
+
+            **Commit message:** ${{ github.event.head_commit.message }}
+          files: build/libs/XaeroSharePlugin-${{ steps.get_version.outputs.version }}.jar
+          prerelease: false

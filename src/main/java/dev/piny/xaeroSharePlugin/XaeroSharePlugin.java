@@ -11,7 +11,6 @@ import io.papermc.paper.registry.data.dialog.input.DialogInput;
 import io.papermc.paper.registry.data.dialog.type.DialogType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -22,7 +21,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 public final class XaeroSharePlugin extends JavaPlugin implements Listener {
@@ -30,9 +28,13 @@ public final class XaeroSharePlugin extends JavaPlugin implements Listener {
     private static final Key CONFIRM_KEY = Key.key("xaeroshare:user_input/confirm");
     private static final Key IGNORE_KEY = Key.key("xaeroshare:user_input/ignore");
 
+    private LangManager lang;
+
     @Override
     public void onEnable() {
         // Plugin startup logic
+        saveDefaultConfig();
+        lang = new LangManager(this);
         getServer().getPluginManager().registerEvents(this, this);
     }
 
@@ -57,21 +59,21 @@ public final class XaeroSharePlugin extends JavaPlugin implements Listener {
         }
 
         Dialog dialog = Dialog.create(builder -> builder.empty()
-                .base(DialogBase.builder(Component.text("Select players to share waypoint with"))
+                .base(DialogBase.builder(Component.text(lang.get("dialog.name")))
                         .inputs(inputs)
                         .build()
                 )
                 .type(DialogType.confirmation(
                         ActionButton.create(
-                                Component.text("Confirm", TextColor.color(0xAEFFC1)),
-                                Component.text("Click to confirm your input."),
+                                Component.text(lang.get("dialog.confirm"), TextColor.color(0xAEFFC1)),
+                                Component.text(lang.get("dialog.confirm.tooltip")),
                                 100,
                                 DialogAction.customClick(CONFIRM_KEY, null)
                         ),
 
                         ActionButton.create(
-                                Component.text("Ignore", TextColor.color(0xFFA0B1)),
-                                Component.text("Click here to share with the whole server."),
+                                Component.text(lang.get("dialog.ignore"), TextColor.color(0xFFA0B1)),
+                                Component.text(lang.get("dialog.ignore.tooltip")),
                                 100,
                                 DialogAction.customClick(IGNORE_KEY, null)
                         )

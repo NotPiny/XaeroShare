@@ -1,0 +1,8 @@
+{
+  "credit": "Unmegv2 on GitHub (https://github.com/NotPiny/XaeroShare/issues/3)",
+  "dialog.name": "Выберите игроков, которым вы отправите метку",
+  "dialog.confirm": "Подтвердить",
+  "dialog.confirm.tooltip": "Нажмите сюда для подтверждения отправки выбранным игрокам",
+  "dialog.ignore": "Игнорировать",
+  "dialog.ignore.tooltip": "Нажмите сюда для отправки метки всему серверу"
+}

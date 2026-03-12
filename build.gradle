@@ -1,10 +1,17 @@
+import org.yaml.snakeyaml.Yaml
+
+buildscript {
+    repositories { mavenCentral() }
+    dependencies { classpath 'org.yaml:snakeyaml:2.3' }
+}
+
 plugins {
     id 'java'
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 group = 'dev.piny'
-version = '1.0'
+version = new Yaml().load(file('src/main/resources/plugin.yml').text)['version']
 
 repositories {
     mavenCentral()
