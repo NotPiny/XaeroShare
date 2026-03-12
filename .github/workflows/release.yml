@@ -50,7 +50,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: plugin-v${{ steps.get_version.outputs.version }}
-          name: [Plugin] XaeroShare v${{ steps.get_version.outputs.version }}
+          name: "[Plugin] XaeroShare v${{ steps.get_version.outputs.version }}"
           body: |
             Automated release from commit ${{ github.sha }}.
 
