@@ -1,0 +1,7 @@
+{
+  "dialog.name": "Select players to share waypoint with",
+  "dialog.confirm": "Confirm",
+  "dialog.confirm.tooltip": "Click to confirm your input.",
+  "dialog.ignore": "Ignore",
+  "dialog.ignore.tooltip": "Click here to share with the whole server."
+}
