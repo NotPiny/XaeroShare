@@ -1,8 +1,8 @@
 package dev.piny.xaeroshare.client;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
 import xaero.hud.minimap.BuiltInHudModules;
 import xaero.hud.minimap.module.MinimapSession;
@@ -27,7 +27,7 @@ public class WaypointTools {
             1, "minecraft:the_end"
     );
 
-    public static MinimapWorld getMinimapWorld(RegistryKey<World> dim) { // This is just taken from https://github.com/rfresh2/XaeroPlus/blob/1.20.1/common/src/main/java/xaeroplus/feature/waypoint/WaypointAPI.java#L19 :)
+    public static MinimapWorld getMinimapWorld(ResourceKey<Level> dim) { // This is just taken from https://github.com/rfresh2/XaeroPlus/blob/1.20.1/common/src/main/java/xaeroplus/feature/waypoint/WaypointAPI.java#L19 :)
         MinimapSession minimapSession = BuiltInHudModules.MINIMAP.getCurrentSession();
         if (minimapSession == null) return null;
         MinimapWorld currentWorld = minimapSession.getWorldManager().getCurrentWorld();

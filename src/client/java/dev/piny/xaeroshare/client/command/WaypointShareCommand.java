@@ -5,13 +5,13 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import dev.piny.xaeroshare.client.Waypoint;
 import dev.piny.xaeroshare.client.WaypointTools;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.Level;
 import xaero.hud.minimap.world.MinimapWorld;
 
 import java.util.List;
@@ -19,10 +19,10 @@ import java.util.List;
 public class WaypointShareCommand {
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(
-                ClientCommandManager.literal("waypointshare")
-                        .then(ClientCommandManager.argument("waypointName", StringArgumentType.string())
+                ClientCommands.literal("waypointshare")
+                        .then(ClientCommands.argument("waypointName", StringArgumentType.string())
                                 .suggests((context, builder) -> {
-                                    RegistryKey<World> dimension = MinecraftClient.getInstance().world.getRegistryKey();
+                                    ResourceKey<Level> dimension = Minecraft.getInstance().level.dimension();
                                     MinimapWorld world = WaypointTools.getMinimapWorld(dimension);
                                     if (world == null) return builder.buildFuture();
                                     world.getIterableWaypointSets().forEach(waypointSet -> waypointSet.getWaypoints().forEach(waypoint -> {
@@ -35,22 +35,22 @@ public class WaypointShareCommand {
                                     }));
                                     return builder.buildFuture();
                                 })
-                                .then(ClientCommandManager.argument("dimension", StringArgumentType.string())
+                                .then(ClientCommands.argument("dimension", StringArgumentType.string())
                                         .suggests((context, builder) -> {
-                                            MinecraftClient.getInstance().getNetworkHandler()
-                                                    .getWorldKeys()
-                                                    .forEach(key -> builder.suggest("\"" + key.getValue().toString() + "\""));
+                                            Minecraft.getInstance().getConnection()
+                                                    .levels()
+                                                    .forEach(key -> builder.suggest("\"" + key.identifier().toString() + "\""));
                                             return builder.buildFuture();
                                         })
-                                        .then(ClientCommandManager.argument("players", StringArgumentType.greedyString())
+                                        .then(ClientCommands.argument("players", StringArgumentType.greedyString())
                                                 .suggests((context, builder) -> {
                                                     String remaining = builder.getRemaining();
                                                     String prefix = remaining.contains(" ")
                                                             ? remaining.substring(remaining.lastIndexOf(' ') + 1)
                                                             : remaining;
 
-                                                    MinecraftClient.getInstance().getNetworkHandler()
-                                                            .getPlayerList()
+                                                    Minecraft.getInstance().getConnection()
+                                                            .getOnlinePlayers()
                                                             .forEach(p -> {
                                                                 String name = p.getProfile().name();
                                                                 if (name.startsWith(prefix)) {
@@ -71,16 +71,16 @@ public class WaypointShareCommand {
 
     public static int execute(CommandContext<FabricClientCommandSource> context) {
         String waypointName = StringArgumentType.getString(context, "waypointName");
-        RegistryKey<World> dimension = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(StringArgumentType.getString(context, "dimension")));
+        ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, Identifier.parse(StringArgumentType.getString(context, "dimension")));
         List<String> players = List.of(StringArgumentType.getString(context, "players").split(" "));
 
         MinimapWorld world = WaypointTools.getMinimapWorld(dimension);
         world.getIterableWaypointSets().forEach(waypointSet -> waypointSet.getWaypoints().forEach(waypoint -> {
-            Waypoint wp = WaypointTools.convertWaypoint(waypoint, WaypointTools.dimId.getOrDefault(dimension.getValue().toString(), 0));
+            Waypoint wp = WaypointTools.convertWaypoint(waypoint, WaypointTools.dimId.getOrDefault(dimension.identifier().toString(), 0));
             if (wp.name().equals(waypointName)) {
                 // Send the waypoint to the server to be shared with the specified players
                 players.forEach(player -> {
-                    MinecraftClient.getInstance().player.networkHandler.sendChatCommand("msg " + player + " " + wp.toImportableString());
+                    Minecraft.getInstance().player.connection.sendCommand("msg " + player + " " + wp.toImportableString());
                 });
             }
         }));

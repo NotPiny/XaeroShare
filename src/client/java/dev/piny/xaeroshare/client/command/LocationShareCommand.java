@@ -6,10 +6,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import dev.piny.xaeroshare.client.Waypoint;
 import dev.piny.xaeroshare.client.WaypointTools;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
@@ -17,27 +17,27 @@ public class LocationShareCommand {
 
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(
-                ClientCommandManager.literal("locationshare")
-                        .then(ClientCommandManager.argument("waypointName", StringArgumentType.string())
-                                .then(ClientCommandManager.argument("dimension", StringArgumentType.string())
+                ClientCommands.literal("locationshare")
+                        .then(ClientCommands.argument("waypointName", StringArgumentType.string())
+                                .then(ClientCommands.argument("dimension", StringArgumentType.string())
                                         .suggests((context, builder) -> {
-                                            MinecraftClient.getInstance().getNetworkHandler()
-                                                    .getWorldKeys()
-                                                    .forEach(key -> builder.suggest("\"" + key.getValue().toString() + "\""));
+                                            Minecraft.getInstance().getConnection()
+                                                    .levels()
+                                                    .forEach(key -> builder.suggest("\"" + key.identifier().toString() + "\""));
                                             return builder.buildFuture();
                                         })
-                                        .then(ClientCommandManager.argument("x", IntegerArgumentType.integer())
-                                                .then(ClientCommandManager.argument("y", IntegerArgumentType.integer())
-                                                        .then(ClientCommandManager.argument("z", IntegerArgumentType.integer())
-                                                                .then(ClientCommandManager.argument("players", StringArgumentType.greedyString())
+                                        .then(ClientCommands.argument("x", IntegerArgumentType.integer())
+                                                .then(ClientCommands.argument("y", IntegerArgumentType.integer())
+                                                        .then(ClientCommands.argument("z", IntegerArgumentType.integer())
+                                                                .then(ClientCommands.argument("players", StringArgumentType.greedyString())
                                                                         .suggests((context, builder) -> {
                                                                             String remaining = builder.getRemaining();
                                                                             String prefix = remaining.contains(" ")
                                                                                     ? remaining.substring(remaining.lastIndexOf(' ') + 1)
                                                                                     : remaining;
 
-                                                                            MinecraftClient.getInstance().getNetworkHandler()
-                                                                                    .getPlayerList()
+                                                                            Minecraft.getInstance().getConnection()
+                                                                                    .getOnlinePlayers()
                                                                                     .forEach(p -> {
                                                                                         String name = p.getProfile().name();
                                                                                         if (name.startsWith(prefix)) {
@@ -62,7 +62,7 @@ public class LocationShareCommand {
 
     private static int execute(CommandContext<FabricClientCommandSource> context) {
         String waypointName = StringArgumentType.getString(context, "waypointName");
-        Identifier dimension = Identifier.of(StringArgumentType.getString(context, "dimension"));
+        Identifier dimension = Identifier.parse(StringArgumentType.getString(context, "dimension"));
         int x = IntegerArgumentType.getInteger(context, "x");
         int y = IntegerArgumentType.getInteger(context, "y");
         int z = IntegerArgumentType.getInteger(context, "z");
@@ -86,7 +86,7 @@ public class LocationShareCommand {
         );
 
         players.forEach(player -> {
-            MinecraftClient.getInstance().player.networkHandler.sendChatCommand("msg " + player + " " + waypoint.toImportableString());
+            Minecraft.getInstance().player.connection.sendCommand("msg " + player + " " + waypoint.toImportableString());
         });
 
         return 1;

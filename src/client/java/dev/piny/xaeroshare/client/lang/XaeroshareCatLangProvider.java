@@ -1,19 +1,19 @@
 package dev.piny.xaeroshare.client.lang;
 
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.core.HolderLookup;
 
 import java.util.concurrent.CompletableFuture;
 
 public class XaeroshareCatLangProvider extends FabricLanguageProvider {
-    public XaeroshareCatLangProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+    public XaeroshareCatLangProvider(FabricPackOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
         // Specifying en_us is optional, as it's the default language code
         super(dataOutput, "lol_us", registryLookup);
     }
 
     @Override
-    public void generateTranslations(RegistryWrapper.WrapperLookup wrapperLookup, TranslationBuilder translationBuilder) { // TURNS OUT IT'S STUPIDLY HARD TO WRITE LOLCAT 😭
+    public void generateTranslations(HolderLookup.Provider registries, TranslationBuilder translationBuilder) { // TURNS OUT IT'S STUPIDLY HARD TO WRITE LOLCAT 😭
         // Keybinds
         translationBuilder.add("key.xaeroshare.share", "Ai can sharez map pointz");
         translationBuilder.add("key.category.minecraft.xaeroshare", "Map pointz sharerz");
