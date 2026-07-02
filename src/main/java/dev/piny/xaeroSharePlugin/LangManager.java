@@ -21,7 +21,7 @@ public class LangManager {
         load();
     }
 
-    private static final String[] BUNDLED_LANGS = {"en", "ru"};
+    private static final String[] BUNDLED_LANGS = {"en", "ru", "dk"};
 
     private void load() {
         // Extract all bundled lang files to the data folder if not already present
